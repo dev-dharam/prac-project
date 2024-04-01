@@ -11,3 +11,13 @@ export const DBConnect = async () => {
         console.error(`Error In DB ${error}`);
     }
 }
+
+export const getDataFromDB = async () => {
+    const resItems = await mongoose.connection.db.collection("Data");
+    const FoodItems = await resItems.find({}).toArray();
+
+    const resCategory = await mongoose.connection.db.collection("category");
+    const FoodCategory = await resCategory.find({}).toArray();
+
+    return {FoodItems, FoodCategory};
+}

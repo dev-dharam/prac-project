@@ -7,11 +7,10 @@ const JWT_SECURE = "thisismyjsonwebtokennnnsecurekey"
 
 export const Register = async (req, res) => {
     const {name, email, password} = req.body;
-
     if(!name || !email || !password){
-        return res.status(404).json({
+        return res.status(401).json({
             success: false,
-            status: 404,
+            status: 401,
             messgae: "Please Fill all fields"
         });
     }
