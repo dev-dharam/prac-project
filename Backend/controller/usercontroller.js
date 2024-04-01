@@ -1,9 +1,13 @@
 import { usermodel } from "../models/usermodel.js";
 import bcrypt from 'bcrypt';
+import JWT from 'jsonwebtoken';
+
+// const JWT_SECURE = process.env.JWT_SECURE;
+const JWT_SECURE = "thisismyjsonwebtokennnnsecurekey"
 
 export const Register = async (req, res) => {
     const {name, email, password} = req.body;
-    
+
     if(!name || !email || !password){
         return res.status(404).json({
             success: false,
@@ -41,5 +45,49 @@ export const Register = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+}
+
+
+// Login Controller
+export const Login = async(req, res) => {
+    const {email, password} = req.body;
+    console.log(email, password);
+
+    // Check User
+    const UserData = await usermodel.findOne({email: email});
+    console.log(UserData)
+    if(!UserData){
+        return res.status(401).json({
+            success: false,
+            messgae: "Please Provide Valid Credential - Email"
+        })
+    }
+
+    // Password Compare
+    const comparePass = await bcrypt.compare(password, UserData.password);
+    console.log(comparePass)
+    if(!comparePass){
+        return res.status(401).json({
+            success: false,
+            messgae: "Please Provide Valid Credential - Password"
+        })
+    };
+
+    // JWT Token
+
+    const user = {
+        id: {
+            userID: UserData._id
+        }
+    }
+
+    const token = JWT.sign(user, JWT_SECURE, {expiresIn: '1h'});
+
+    res.status(200).json({
+        success: true,
+        messgae: "Login Successfully!",
+        token
+    });
+
 }
 
